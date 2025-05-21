@@ -5,358 +5,198 @@ export interface Question {
   options: {
     value: string;
     label: string;
-    traits: Record<string, number>;
+    traits?: Record<string, number>; // Make traits optional
   }[];
+  correctAnswer?: string; // Add field for tracking correct answers
+  explanation?: string; // Add explanation field for answers
+  imageUrl?: string; // Add optional image URL for diagrams and formulas
+  difficulty?: 'easy' | 'medium' | 'hard'; // Add difficulty level
+  topic?: string; // Add chemistry topic categorization
 }
 
-export interface Major {
+// Define chemistry topics instead of majors
+export interface Topic {
   id: string;
   name: string;
   description: string;
-  traits: Record<string, number>;
   icon: string;
 }
 
-// These traits represent different dimensions that can predict academic interests
-// analytical: logical thinking and problem solving
-// creative: artistic and innovative thinking
-// social: interaction with and helping others
-// practical: hands-on and application-oriented
-// investigative: research and discovery-oriented
-// enterprising: leadership and persuasion-oriented
-
-export const questions: Question[] = [
+export const chemistryTopics: Topic[] = [
   {
-    id: 1,
-    text: "Ketika dihadapkan dengan masalah baru, bagaimana pendekatan yang lebih Anda sukai?",
-    options: [
-      { 
-        value: "a", 
-        label: "Menganalisis secara logis dan mencari solusi terbaik", 
-        traits: { analytical: 3, investigative: 2 }
-      },
-      { 
-        value: "b", 
-        label: "Mencari pendekatan kreatif dan solusi inovatif", 
-        traits: { creative: 3, enterprising: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Mendiskusikan dengan orang lain untuk mendapatkan perspektif beragam", 
-        traits: { social: 3, creative: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Menggunakan pengalaman dan pengetahuan praktis untuk menemukan solusi", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
+    id: "kimia-organik",
+    name: "Kimia Organik",
+    description: "Mempelajari senyawa yang mengandung karbon, struktur, sifat, dan reaksinya.",
+    icon: "molecule"
   },
   {
-    id: 2,
-    text: "Aktivitas manakah yang paling Anda nikmati di waktu luang?",
-    options: [
-      { 
-        value: "a", 
-        label: "Membaca buku atau artikel tentang topik yang menarik", 
-        traits: { investigative: 3, analytical: 1 }
-      },
-      { 
-        value: "b", 
-        label: "Berkreasi, menggambar, atau membuat sesuatu", 
-        traits: { creative: 3, practical: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Bersosialisasi dan menghabiskan waktu dengan teman atau keluarga", 
-        traits: { social: 3, enterprising: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Memperbaiki, merakit, atau bekerja dengan alat", 
-        traits: { practical: 3, investigative: 1 }
-      }
-    ]
+    id: "kimia-anorganik",
+    name: "Kimia Anorganik",
+    description: "Mempelajari senyawa-senyawa yang tidak mengandung karbon (kecuali beberapa pengecualian).",
+    icon: "atom" 
   },
   {
-    id: 3,
-    text: "Dalam kerja kelompok, peran apa yang biasanya Anda ambil?",
-    options: [
-      { 
-        value: "a", 
-        label: "Menganalisis informasi dan data untuk pengambilan keputusan", 
-        traits: { analytical: 3, investigative: 2 }
-      },
-      { 
-        value: "b", 
-        label: "Menyumbangkan ide-ide kreatif dan perspektif baru", 
-        traits: { creative: 3, enterprising: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Memfasilitasi diskusi dan membantu kelompok tetap fokus", 
-        traits: { social: 2, enterprising: 2 }
-      },
-      { 
-        value: "d", 
-        label: "Memastikan tugas diselesaikan tepat waktu dengan standar tinggi", 
-        traits: { practical: 2, analytical: 2 }
-      }
-    ]
-  },
-  {
-    id: 4,
-    text: "Ketika mempelajari topik baru, pendekatan mana yang lebih Anda sukai?",
-    options: [
-      { 
-        value: "a", 
-        label: "Memahami konsep dan teori yang mendasarinya", 
-        traits: { analytical: 3, investigative: 2 }
-      },
-      { 
-        value: "b", 
-        label: "Mengeksplorasi berbagai interpretasi dan kemungkinan", 
-        traits: { creative: 3, investigative: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Berdiskusi dan belajar melalui pengajaran dari orang lain", 
-        traits: { social: 3, enterprising: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Menerapkan secara langsung melalui contoh praktis dan latihan", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
-  },
-  {
-    id: 5,
-    text: "Mata pelajaran apa yang paling Anda sukai di sekolah?",
-    options: [
-      { 
-        value: "a", 
-        label: "Matematika dan Sains (Fisika, Kimia, Biologi)", 
-        traits: { analytical: 3, investigative: 2 }
-      },
-      { 
-        value: "b", 
-        label: "Seni, Musik, atau Bahasa", 
-        traits: { creative: 3, social: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Ilmu Sosial (Sosiologi, Psikologi, Ekonomi)", 
-        traits: { social: 2, enterprising: 2 }
-      },
-      { 
-        value: "d", 
-        label: "Pendidikan Teknikal atau Olahraga", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
-  },
-  {
-    id: 6,
-    text: "Bagaimana Anda paling suka mengungkapkan ide-ide Anda?",
-    options: [
-      { 
-        value: "a", 
-        label: "Melalui data, grafik, dan penjelasan logis", 
-        traits: { analytical: 3, investigative: 1 }
-      },
-      { 
-        value: "b", 
-        label: "Melalui gambar, cerita, atau presentasi kreatif", 
-        traits: { creative: 3, social: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Melalui diskusi dan persuasi verbal", 
-        traits: { social: 2, enterprising: 2 }
-      },
-      { 
-        value: "d", 
-        label: "Melalui demonstrasi dan contoh praktis", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
-  },
-  {
-    id: 7,
-    text: "Dalam pengambilan keputusan penting, apa yang paling Anda andalkan?",
-    options: [
-      { 
-        value: "a", 
-        label: "Logika dan analisis rasional", 
-        traits: { analytical: 3, investigative: 1 }
-      },
-      { 
-        value: "b", 
-        label: "Intuisi dan perasaan kreatif", 
-        traits: { creative: 2, social: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Dampak pada orang lain dan nilai-nilai", 
-        traits: { social: 3, enterprising: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Pengalaman praktis dan apa yang telah berhasil sebelumnya", 
-        traits: { practical: 3, enterprising: 1 }
-      }
-    ]
-  },
-  {
-    id: 8,
-    text: "Ketika menghadapi tantangan baru, apa yang paling memotivasi Anda?",
-    options: [
-      { 
-        value: "a", 
-        label: "Kesempatan untuk menganalisis dan menemukan solusi yang optimal", 
-        traits: { analytical: 3, investigative: 2 }
-      },
-      { 
-        value: "b", 
-        label: "Kebebasan untuk mengeksplorasi ide-ide inovatif", 
-        traits: { creative: 3, enterprising: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Kesempatan untuk bekerja sama dan membantu orang lain", 
-        traits: { social: 3, practical: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Melihat hasil konkret dari upaya Anda", 
-        traits: { practical: 3, enterprising: 1 }
-      }
-    ]
-  },
-  {
-    id: 9,
-    text: "Jenis pencapaian apa yang membuat Anda paling bangga?",
-    options: [
-      { 
-        value: "a", 
-        label: "Memecahkan masalah kompleks atau menemukan wawasan baru", 
-        traits: { analytical: 2, investigative: 3 }
-      },
-      { 
-        value: "b", 
-        label: "Menciptakan sesuatu yang unik atau mengekspresikan diri secara kreatif", 
-        traits: { creative: 3, social: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Membantu orang lain mencapai tujuan mereka atau membuat perubahan positif", 
-        traits: { social: 3, enterprising: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Membangun, memperbaiki, atau menyelesaikan proyek secara efisien", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
-  },
-  {
-    id: 10,
-    text: "Dalam lima tahun ke depan, lingkungan kerja seperti apa yang ideal bagi Anda?",
-    options: [
-      { 
-        value: "a", 
-        label: "Lingkungan yang memungkinkan penelitian mendalam dan pemecahan masalah", 
-        traits: { analytical: 2, investigative: 3 }
-      },
-      { 
-        value: "b", 
-        label: "Lingkungan yang mendorong kreativitas dan inovasi", 
-        traits: { creative: 3, enterprising: 1 }
-      },
-      { 
-        value: "c", 
-        label: "Lingkungan yang berfokus pada membantu orang dan bekerja dalam tim", 
-        traits: { social: 3, practical: 1 }
-      },
-      { 
-        value: "d", 
-        label: "Lingkungan yang menghasilkan hasil praktis dan konkret", 
-        traits: { practical: 3, analytical: 1 }
-      }
-    ]
-  }
-];
-
-export const majors: Major[] = [
-  {
-    id: "teknik-informatika",
-    name: "Teknik Informatika",
-    description: "Jurusan yang berfokus pada pengembangan perangkat lunak, algoritma, dan sistem komputasi.",
-    traits: { analytical: 9, investigative: 7, creative: 5, practical: 6, enterprising: 2, social: 1 },
-    icon: "file-code"
-  },
-  {
-    id: "teknik-elektro",
-    name: "Teknik Elektro",
-    description: "Jurusan yang mempelajari penerapan listrik, elektronika, dan elektromagnetisme.",
-    traits: { analytical: 8, investigative: 6, practical: 8, creative: 3, enterprising: 2, social: 1 },
+    id: "kimia-fisik",
+    name: "Kimia Fisik",
+    description: "Menerapkan fisika untuk memahami fenomena kimia seperti termodinamika dan kinetika.",
     icon: "flask-conical"
   },
   {
-    id: "ilmu-kedokteran",
-    name: "Kedokteran",
-    description: "Jurusan yang mempelajari diagnosis, pengobatan, dan pencegahan penyakit pada manusia.",
-    traits: { analytical: 8, investigative: 8, social: 7, practical: 6, enterprising: 2, creative: 2 },
-    icon: "flask-round"
+    id: "biokimia",
+    name: "Biokimia",
+    description: "Mempelajari proses kimia dalam sistem biologi, termasuk struktur dan fungsi biomolekul.",
+    icon: "test-tube"
   },
   {
-    id: "manajemen-bisnis",
-    name: "Manajemen Bisnis",
-    description: "Jurusan yang mempelajari perencanaan, organisasi, dan pengelolaan operasi bisnis.",
-    traits: { enterprising: 8, practical: 6, analytical: 5, social: 7, creative: 4, investigative: 2 },
-    icon: "chart-bar"
+    id: "kimia-analitik",
+    name: "Kimia Analitik",
+    description: "Mempelajari metode untuk mengidentifikasi, memisahkan dan mengukur zat kimia.",
+    icon: "beaker"
+  }
+];
+
+// Replace questions with chemistry olympiad questions
+export const questions: Question[] = [
+  {
+    id: 1,
+    text: "Berapa massa atom relatif dari oksigen (O)?",
+    options: [
+      { value: "a", label: "8" },
+      { value: "b", label: "12" },
+      { value: "c", label: "16" },
+      { value: "d", label: "32" }
+    ],
+    correctAnswer: "c",
+    explanation: "Massa atom relatif oksigen adalah 16, berdasarkan skala massa atom dengan karbon-12 sebagai rujukan.",
+    topic: "kimia-anorganik",
+    difficulty: "easy"
   },
   {
-    id: "psikologi",
-    name: "Psikologi",
-    description: "Jurusan yang mempelajari perilaku dan proses mental manusia.",
-    traits: { social: 9, investigative: 7, analytical: 6, creative: 4, practical: 2, enterprising: 3 },
-    icon: "brain"
+    id: 2,
+    text: "Senyawa berikut yang merupakan alkana adalah:",
+    options: [
+      { value: "a", label: "C₂H₄" },
+      { value: "b", label: "C₃H₈" },
+      { value: "c", label: "C₂H₂" },
+      { value: "d", label: "C₆H₆" }
+    ],
+    correctAnswer: "b",
+    explanation: "C₃H₈ (propana) adalah alkana dengan rumus umum CnH2n+2. Alkana merupakan hidrokarbon jenuh yang hanya memiliki ikatan tunggal.",
+    topic: "kimia-organik",
+    difficulty: "medium"
   },
   {
-    id: "desain-komunikasi-visual",
-    name: "Desain Komunikasi Visual",
-    description: "Jurusan yang berfokus pada desain grafis, ilustrasi, dan komunikasi visual.",
-    traits: { creative: 9, practical: 5, social: 4, enterprising: 3, analytical: 2, investigative: 1 },
-    icon: "book"
+    id: 3,
+    text: "Perhatikan reaksi berikut:\n2H₂ + O₂ → 2H₂O\n\nBerapa mol oksigen yang diperlukan untuk bereaksi sempurna dengan 6 mol hidrogen?",
+    options: [
+      { value: "a", label: "3 mol" },
+      { value: "b", label: "6 mol" },
+      { value: "c", label: "2 mol" },
+      { value: "d", label: "1.5 mol" }
+    ],
+    correctAnswer: "a",
+    explanation: "Dari persamaan reaksi, 2 mol H₂ membutuhkan 1 mol O₂. Jadi 6 mol H₂ membutuhkan 6/2 = 3 mol O₂.",
+    topic: "kimia-fisik",
+    difficulty: "medium",
+    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475"
   },
   {
-    id: "ilmu-komunikasi",
-    name: "Ilmu Komunikasi",
-    description: "Jurusan yang mempelajari proses komunikasi antar individu, kelompok, dan masyarakat.",
-    traits: { social: 8, creative: 6, enterprising: 6, practical: 3, analytical: 3, investigative: 2 },
-    icon: "book-open"
+    id: 4,
+    text: "Perhatikan konfigurasi elektron berikut:\n1s² 2s² 2p⁶ 3s² 3p⁵\n\nUnsur dengan konfigurasi elektron tersebut termasuk dalam golongan:",
+    options: [
+      { value: "a", label: "Alkali" },
+      { value: "b", label: "Gas mulia" },
+      { value: "c", label: "Halogen" },
+      { value: "d", label: "Alkali tanah" }
+    ],
+    correctAnswer: "c",
+    explanation: "Konfigurasi elektron tersebut memiliki 7 elektron pada kulit terluar (3s² 3p⁵), yang merupakan ciri khas golongan halogen (golongan VIIA).",
+    topic: "kimia-anorganik",
+    difficulty: "hard"
   },
   {
-    id: "akuntansi",
-    name: "Akuntansi",
-    description: "Jurusan yang mempelajari pengukuran, pemrosesan, dan komunikasi informasi keuangan.",
-    traits: { analytical: 9, practical: 7, enterprising: 4, investigative: 3, social: 2, creative: 1 },
-    icon: "chart-pie"
+    id: 5,
+    text: "pH larutan dengan [H⁺] = 1 × 10⁻⁵ M adalah:",
+    options: [
+      { value: "a", label: "5" },
+      { value: "b", label: "9" },
+      { value: "c", label: "10" },
+      { value: "d", label: "14" }
+    ],
+    correctAnswer: "a",
+    explanation: "pH = -log[H⁺] = -log(1 × 10⁻⁵) = -((-5) × log10) = 5",
+    topic: "kimia-fisik",
+    difficulty: "medium"
   },
   {
-    id: "hukum",
-    name: "Hukum",
-    description: "Jurusan yang mempelajari sistem aturan yang diberlakukan melalui lembaga sosial untuk mengatur perilaku.",
-    traits: { analytical: 8, social: 6, investigative: 7, enterprising: 5, practical: 2, creative: 2 },
-    icon: "file-text"
+    id: 6,
+    text: "Dalam elektrokimia, manakah pernyataan yang BENAR tentang sel galvani?",
+    options: [
+      { value: "a", label: "Energi listrik diubah menjadi energi kimia" },
+      { value: "b", label: "Reaksi kimia spontan menghasilkan energi listrik" },
+      { value: "c", label: "Elektroda positif disebut anoda" },
+      { value: "d", label: "Elektroda negatif disebut katoda" }
+    ],
+    correctAnswer: "b",
+    explanation: "Sel galvani (sel volta) mengubah energi kimia dari reaksi redoks spontan menjadi energi listrik.",
+    topic: "kimia-fisik",
+    difficulty: "hard"
   },
   {
-    id: "pendidikan",
-    name: "Pendidikan",
-    description: "Jurusan yang mempelajari proses pengajaran dan pembelajaran.",
-    traits: { social: 9, practical: 6, creative: 5, analytical: 3, enterprising: 4, investigative: 3 },
-    icon: "graduation-cap"
+    id: 7,
+    text: "Struktur Lewis untuk molekul CO₂ yang benar adalah:",
+    imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+    options: [
+      { value: "a", label: "O=C=O" },
+      { value: "b", label: "O-C-O" },
+      { value: "c", label: "O≡C-O" },
+      { value: "d", label: "O-C≡O" }
+    ],
+    correctAnswer: "a",
+    explanation: "CO₂ memiliki dua ikatan rangkap, dengan atom oksigen di kedua sisi yang terikat dengan ikatan rangkap ke atom karbon pusat.",
+    topic: "kimia-anorganik",
+    difficulty: "medium"
+  },
+  {
+    id: 8,
+    text: "Reaksi berikut merupakan contoh dari:\nCH₃CH₂OH + O₂ → CH₃COOH + H₂O",
+    options: [
+      { value: "a", label: "Oksidasi" },
+      { value: "b", label: "Reduksi" },
+      { value: "c", label: "Hidrolisis" },
+      { value: "d", label: "Netralisasi" }
+    ],
+    correctAnswer: "a",
+    explanation: "Reaksi ini menunjukkan oksidasi etanol (CH₃CH₂OH) menjadi asam asetat (CH₃COOH), di mana terjadi penambahan oksigen dan atom C mengalami kenaikan bilangan oksidasi.",
+    topic: "kimia-organik",
+    difficulty: "hard"
+  },
+  {
+    id: 9,
+    text: "Larutan buffer dapat dihasilkan dari campuran:",
+    options: [
+      { value: "a", label: "Asam kuat dan basa kuat" },
+      { value: "b", label: "Asam lemah dan garamnya" },
+      { value: "c", label: "Basa kuat dan garam dari asam kuat" },
+      { value: "d", label: "Dua asam kuat yang berbeda" }
+    ],
+    correctAnswer: "b",
+    explanation: "Larutan buffer (penyangga) dapat dibuat dari asam lemah dan garamnya (seperti CH₃COOH dan CH₃COONa) atau basa lemah dan garamnya.",
+    topic: "kimia-fisik",
+    difficulty: "medium"
+  },
+  {
+    id: 10,
+    text: "Berikut ini yang merupakan contoh koloid adalah:",
+    options: [
+      { value: "a", label: "Larutan gula" },
+      { value: "b", label: "Air laut" },
+      { value: "c", label: "Susu" },
+      { value: "d", label: "Oksigen dalam air" }
+    ],
+    correctAnswer: "c",
+    explanation: "Susu adalah contoh koloid jenis emulsi, di mana partikel lemak tersebar dalam medium air. Koloid memiliki ukuran partikel antara larutan sejati dan suspensi.",
+    topic: "kimia-fisik",
+    difficulty: "easy"
   }
 ];

@@ -6,6 +6,7 @@ import QuestionCard from '../components/QuestionCard';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { questions } from '../data/questionsData';
+import { calculateTopicScores, calculateOverallScore } from '../utils/recommendationUtils';
 
 const Quiz = () => {
   const navigate = useNavigate();
@@ -37,11 +38,18 @@ const Quiz = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Calculate user traits based on answers
-      const userTraits = calculateUserTraits();
+      // Calculate scores
+      const topicScores = calculateTopicScores(answers, questions);
+      const overallScore = calculateOverallScore(answers, questions);
       
-      // Navigate to results page with traits data
-      navigate('/results', { state: { userTraits } });
+      // Navigate to results page with answer data
+      navigate('/results', { 
+        state: { 
+          answers, 
+          topicScores, 
+          overallScore 
+        } 
+      });
     }
   };
   
@@ -57,45 +65,13 @@ const Quiz = () => {
     setSelectedOption(answers[currentQuestion.id] || null);
   }, [currentQuestionIndex, answers, currentQuestion.id]);
   
-  // Calculate user traits based on answers
-  const calculateUserTraits = () => {
-    const userTraits = {
-      analytical: 0,
-      creative: 0,
-      social: 0,
-      practical: 0,
-      investigative: 0,
-      enterprising: 0
-    };
-    
-    // Process each question's answer
-    for (const questionId in answers) {
-      const question = questions.find(q => q.id === parseInt(questionId));
-      if (question) {
-        const selectedAnswer = question.options.find(
-          option => option.value === answers[parseInt(questionId)]
-        );
-        
-        if (selectedAnswer) {
-          // Add the traits values from this answer
-          for (const traitKey in selectedAnswer.traits) {
-            userTraits[traitKey as keyof typeof userTraits] += 
-              selectedAnswer.traits[traitKey] || 0;
-          }
-        }
-      }
-    }
-    
-    return userTraits;
-  };
-  
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium">
-              Pertanyaan {currentQuestionIndex + 1} dari {questions.length}
+              Soal {currentQuestionIndex + 1} dari {questions.length}
             </span>
             <span className="text-sm font-medium">{Math.round(progress)}%</span>
           </div>
@@ -113,7 +89,7 @@ const Quiz = () => {
             variant="outline" 
             onClick={handlePreviousQuestion}
             disabled={currentQuestionIndex === 0}
-            className="text-education-700 border-education-300"
+            className="text-chemistry-700 border-chemistry-300"
           >
             Kembali
           </Button>
@@ -121,7 +97,7 @@ const Quiz = () => {
           <Button 
             onClick={handleNextQuestion}
             disabled={selectedOption === null}
-            className="bg-education-600 hover:bg-education-700"
+            className="bg-chemistry-600 hover:bg-chemistry-700"
           >
             {currentQuestionIndex < questions.length - 1 ? 'Lanjut' : 'Lihat Hasil'}
           </Button>

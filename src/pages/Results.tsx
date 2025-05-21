@@ -2,74 +2,49 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import MajorCard from '../components/MajorCard';
-import ProfileChart from '../components/ProfileChart';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { majors } from '../data/questionsData';
-import { getRecommendedMajors, normalizeUserTraits } from '../utils/recommendationUtils';
-import { Download, Share2 } from 'lucide-react';
+import { questions, chemistryTopics } from '../data/questionsData';
+import { getRecommendedTopics } from '../utils/recommendationUtils';
+import { Download, Share2, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-// Define the UserTraits interface
-interface UserTraits {
-  analytical: number;
-  creative: number;
-  social: number;
-  practical: number;
-  investigative: number;
-  enterprising: number;
-  [key: string]: number; // Index signature to satisfy Record<string, number>
-}
-
-// Define enhanced Major with similarity
-interface MajorWithSimilarity {
-  id: string;
-  name: string;
-  description: string;
-  traits: Record<string, number>;
-  icon: string;
-  similarity?: number;
-}
 
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Check if user traits exist in location state
-  const userTraits = location.state?.userTraits as UserTraits | undefined;
+  // Get answers and scores from location state
+  const answers = location.state?.answers as Record<number, string> | undefined;
+  const topicScores = location.state?.topicScores as Record<string, number> | undefined;
+  const overallScore = location.state?.overallScore as number | undefined;
   
-  // Redirect to quiz if no traits data is available
+  // Redirect to quiz if no answers data is available
   React.useEffect(() => {
-    if (!userTraits) {
+    if (!answers) {
       navigate('/quiz');
     }
-  }, [userTraits, navigate]);
+  }, [answers, navigate]);
   
   // If no data, show loading
-  if (!userTraits) {
+  if (!answers || !topicScores || overallScore === undefined) {
     return <div>Loading...</div>;
   }
   
-  // Normalize user traits for better contrast
-  const normalizedTraits = normalizeUserTraits(userTraits);
-  
-  // Get recommended majors
-  const recommendedMajors = getRecommendedMajors(normalizedTraits, majors) as MajorWithSimilarity[];
+  // Get recommended topics to focus on (topics with lower scores)
+  const topicsToFocus = getRecommendedTopics(topicScores, chemistryTopics);
   
   // Handle sharing results
   const handleShare = () => {
-    const shareText = `Saya baru saja menyelesaikan tes penentuan jurusan kuliah dan jurusan terbaik untuk saya adalah ${recommendedMajors[0].name}! Coba juga di Penentu Jurusan.`;
+    const shareText = `Saya baru saja menyelesaikan latihan soal Olimpiade Kimia dan mendapatkan skor ${Math.round(overallScore)}%!`;
     
     if (navigator.share) {
       navigator.share({
-        title: 'Hasil Tes Penentu Jurusan',
+        title: 'Hasil Latihan Olimpiade Kimia',
         text: shareText,
       })
       .catch(() => {
-        // Fallback if share fails
         navigator.clipboard.writeText(shareText);
         toast({
           title: "Teks berhasil disalin!",
@@ -77,7 +52,6 @@ const Results = () => {
         });
       });
     } else {
-      // Fallback if Web Share API not supported
       navigator.clipboard.writeText(shareText);
       toast({
         title: "Teks berhasil disalin!",
@@ -88,30 +62,50 @@ const Results = () => {
   
   // Handle download results
   const handleDownload = () => {
-    // For this simplified version, just show a toast notification
     toast({
       title: "Hasil telah disimpan",
-      description: "Hasil analisis Anda telah berhasil disimpan."
+      description: "Hasil latihan Anda telah berhasil disimpan."
     });
   };
   
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <Card className="mb-8 border-education-200 shadow-md">
-          <CardHeader className="bg-education-50 rounded-t-lg">
-            <CardTitle className="text-2xl text-education-900">Hasil Analisis Anda</CardTitle>
-            <CardDescription className="text-education-700">
-              Berdasarkan jawaban Anda, kami telah menganalisis kecenderungan kepribadian dan mengidentifikasi jurusan kuliah yang paling sesuai.
+        <Card className="mb-8 border-chemistry-200 shadow-md">
+          <CardHeader className="bg-chemistry-50 rounded-t-lg">
+            <CardTitle className="text-2xl text-chemistry-900">Hasil Latihan Anda</CardTitle>
+            <CardDescription className="text-chemistry-700">
+              Anda telah menjawab {Object.keys(answers).length} soal dan mendapatkan skor {Math.round(overallScore)}%.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <ProfileChart traits={normalizedTraits} />
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Performa per Topik</h3>
+              <div className="space-y-3">
+                {topicsToFocus.map(topic => {
+                  const score = Math.round(topicScores[topic.id] || 0);
+                  return (
+                    <div key={topic.id} className="flex items-center">
+                      <div className="w-1/3 font-medium">{topic.name}</div>
+                      <div className="w-2/3 flex items-center">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                          <div 
+                            className={`h-2.5 rounded-full ${score < 50 ? 'bg-red-500' : score < 80 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                            style={{ width: `${score}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium">{score}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
             
             <div className="mt-6 flex flex-wrap gap-4 justify-center">
               <Button
                 onClick={handleShare}
-                className="flex items-center gap-2 bg-education-600 hover:bg-education-700"
+                className="flex items-center gap-2 bg-chemistry-600 hover:bg-chemistry-700"
               >
                 <Share2 className="h-4 w-4" />
                 Bagikan Hasil
@@ -119,7 +113,7 @@ const Results = () => {
               <Button
                 onClick={handleDownload}
                 variant="outline"
-                className="flex items-center gap-2 border-education-300 text-education-700"
+                className="flex items-center gap-2 border-chemistry-300 text-chemistry-700"
               >
                 <Download className="h-4 w-4" />
                 Simpan Hasil
@@ -128,56 +122,63 @@ const Results = () => {
           </CardContent>
         </Card>
         
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-education-900 mb-2">Rekomendasi Jurusan Kuliah</h2>
-          <p className="text-gray-600 mb-6">
-            Berikut adalah jurusan kuliah yang paling sesuai dengan profil kepribadian dan kecenderungan akademik Anda.
-          </p>
-          
-          <div className="space-y-4">
-            {recommendedMajors.slice(0, 5).map((major, index) => (
-              <MajorCard
-                key={major.id}
-                name={major.name}
-                description={major.description}
-                matchPercentage={major.similarity || 0}
-                icon={major.icon}
-                index={index}
-              />
-            ))}
-          </div>
-        </div>
-        
-        <Card className="mb-8 border-education-100">
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-xl text-education-800">Bagaimana Kami Menentukan Rekomendasi?</CardTitle>
+            <CardTitle className="text-xl">Ringkasan Jawaban</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4 text-gray-600">
-              Rekomendasi jurusan kuliah kami didasarkan pada kecocokan antara profil kepribadian Anda dengan karakteristik yang dibutuhkan dalam berbagai bidang studi.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="bg-education-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-1 text-education-800">Analisis Kepribadian</h3>
-                <p className="text-sm text-gray-600">
-                  Kami menganalisis kecenderungan analitis, kreatif, sosial, praktis, investigatif, dan wirausaha Anda berdasarkan respon terhadap tes psikometrik.
-                </p>
-              </div>
-              
-              <div className="bg-education-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-1 text-education-800">Kecocokan Jurusan</h3>
-                <p className="text-sm text-gray-600">
-                  Setiap jurusan memiliki profil karakteristik yang dibutuhkan. Kami mencocokkan profil Anda dengan profil jurusan menggunakan algoritma similarity.
-                </p>
-              </div>
+            <div className="space-y-4">
+              {questions.map((question) => {
+                const userAnswer = answers[question.id];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                return (
+                  <div key={question.id} className="border rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <div className={`mt-1 ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                        {isCorrect ? <CheckCircle size={18} /> : <XCircle size={18} />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium whitespace-pre-line">{question.text}</p>
+                        
+                        {question.imageUrl && (
+                          <div className="my-2">
+                            <img 
+                              src={question.imageUrl} 
+                              alt="Chemistry diagram" 
+                              className="max-w-full h-auto max-h-48 mx-auto rounded-md"
+                            />
+                          </div>
+                        )}
+                        
+                        <div className="mt-2">
+                          <span className="text-sm text-gray-600">Jawaban Anda: </span>
+                          <span className={isCorrect ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                            {question.options.find(opt => opt.value === userAnswer)?.label || 'Tidak menjawab'}
+                          </span>
+                        </div>
+                        
+                        {!isCorrect && (
+                          <div className="mt-1">
+                            <span className="text-sm text-gray-600">Jawaban Benar: </span>
+                            <span className="text-green-600 font-medium">
+                              {question.options.find(opt => opt.value === question.correctAnswer)?.label}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {question.explanation && (
+                          <div className="mt-2 p-2 bg-chemistry-50 rounded text-sm">
+                            <span className="font-medium">Penjelasan: </span>
+                            {question.explanation}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            
-            <Separator className="my-4" />
-            
-            <p className="text-gray-600 text-sm italic">
-              Penting: Hasil ini adalah rekomendasi berdasarkan kecenderungan kepribadian Anda, bukan penilaian kemampuan akademik. Selalu pertimbangkan faktor lain seperti minat personal, peluang karir, dan kemampuan akademik spesifik.
-            </p>
           </CardContent>
         </Card>
         
@@ -185,9 +186,9 @@ const Results = () => {
           <Button
             onClick={() => navigate('/quiz')}
             variant="outline"
-            className="border-education-300 text-education-700"
+            className="border-chemistry-300 text-chemistry-700"
           >
-            Ambil Tes Kembali
+            Coba Lagi
           </Button>
         </div>
       </div>

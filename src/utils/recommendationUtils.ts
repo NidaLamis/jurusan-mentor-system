@@ -1,13 +1,15 @@
 
 import { Major } from "../data/questionsData";
 
-interface UserTraits {
+// Define the UserTraits interface
+export interface UserTraits {
   analytical: number;
   creative: number;
   social: number;
   practical: number;
   investigative: number;
   enterprising: number;
+  [key: string]: number; // Index signature to make it compatible with Record<string, number>
 }
 
 // Calculate similarity between user traits and major traits using cosine similarity
@@ -37,14 +39,19 @@ export const calculateSimilarity = (userTraits: UserTraits, major: Major): numbe
   return similarity;
 };
 
+// Define a return type for the enhanced majors with similarity score
+export interface MajorWithSimilarity extends Major {
+  similarity?: number;
+}
+
 // Get ranked majors based on user traits
-export const getRecommendedMajors = (userTraits: UserTraits, majors: Major[]): Major[] => {
+export const getRecommendedMajors = (userTraits: UserTraits, majors: Major[]): MajorWithSimilarity[] => {
   return majors
     .map(major => ({
       ...major,
       similarity: calculateSimilarity(userTraits, major)
     }))
-    .sort((a, b) => b.similarity - a.similarity);
+    .sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 };
 
 // Normalize user traits to have higher contrast

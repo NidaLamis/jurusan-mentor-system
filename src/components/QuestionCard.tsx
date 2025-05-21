@@ -19,7 +19,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, selectedOption, o
         <CardDescription className="text-lg text-education-700">{question.text}</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
-        <RadioGroup value={selectedOption || ""} onChange={(value) => onSelect(value)}>
+        <RadioGroup value={selectedOption || ""} onValueChange={onSelect}>
           {question.options.map((option) => (
             <div key={option.value} className="flex items-center space-x-2 mb-4">
               <RadioGroupItem 

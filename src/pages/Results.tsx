@@ -12,13 +12,34 @@ import { getRecommendedMajors, normalizeUserTraits } from '../utils/recommendati
 import { Download, Share2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
+// Define the UserTraits interface
+interface UserTraits {
+  analytical: number;
+  creative: number;
+  social: number;
+  practical: number;
+  investigative: number;
+  enterprising: number;
+  [key: string]: number; // Index signature to satisfy Record<string, number>
+}
+
+// Define enhanced Major with similarity
+interface MajorWithSimilarity {
+  id: string;
+  name: string;
+  description: string;
+  traits: Record<string, number>;
+  icon: string;
+  similarity?: number;
+}
+
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   
   // Check if user traits exist in location state
-  const userTraits = location.state?.userTraits;
+  const userTraits = location.state?.userTraits as UserTraits | undefined;
   
   // Redirect to quiz if no traits data is available
   React.useEffect(() => {
@@ -36,7 +57,7 @@ const Results = () => {
   const normalizedTraits = normalizeUserTraits(userTraits);
   
   // Get recommended majors
-  const recommendedMajors = getRecommendedMajors(normalizedTraits, majors);
+  const recommendedMajors = getRecommendedMajors(normalizedTraits, majors) as MajorWithSimilarity[];
   
   // Handle sharing results
   const handleShare = () => {

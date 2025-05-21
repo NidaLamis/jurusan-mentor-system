@@ -13,10 +13,21 @@ interface QuestionCardProps {
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question, selectedOption, onSelect }) => {
   return (
-    <Card className="w-full max-w-3xl mx-auto border-education-200 shadow-md animate-slide-up">
-      <CardHeader className="bg-education-50 rounded-t-lg">
-        <CardTitle className="text-xl text-education-900">Pertanyaan {question.id}</CardTitle>
-        <CardDescription className="text-lg text-education-700">{question.text}</CardDescription>
+    <Card className="w-full max-w-3xl mx-auto border-chemistry-200 shadow-md animate-slide-up">
+      <CardHeader className="bg-chemistry-50 rounded-t-lg">
+        <CardTitle className="text-xl text-chemistry-900">Soal {question.id}</CardTitle>
+        <CardDescription className="text-lg text-chemistry-700 whitespace-pre-line">
+          {question.text}
+        </CardDescription>
+        {question.imageUrl && (
+          <div className="mt-2">
+            <img 
+              src={question.imageUrl} 
+              alt="Chemistry diagram" 
+              className="max-w-full mx-auto rounded-md"
+            />
+          </div>
+        )}
       </CardHeader>
       <CardContent className="pt-6">
         <RadioGroup value={selectedOption || ""} onValueChange={onSelect}>
@@ -25,11 +36,11 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, selectedOption, o
               <RadioGroupItem 
                 value={option.value} 
                 id={`option-${question.id}-${option.value}`} 
-                className="text-education-500"
+                className="text-chemistry-500"
               />
               <Label 
                 htmlFor={`option-${question.id}-${option.value}`}
-                className="text-base cursor-pointer py-2 px-3 rounded-md hover:bg-education-50 w-full transition-colors"
+                className="text-base cursor-pointer py-2 px-3 rounded-md hover:bg-chemistry-50 w-full transition-colors whitespace-pre-line"
               >
                 {option.label}
               </Label>

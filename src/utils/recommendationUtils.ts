@@ -12,7 +12,7 @@ export interface UserTraits {
   [key: string]: number; // Index signature to make it compatible with Record<string, number>
 }
 
-// Calculate similarity between user traits and major traits using cosine similarity
+// Calculate similarity between user traits and chemistry topic traits using cosine similarity
 export const calculateSimilarity = (userTraits: UserTraits, major: Major): number => {
   const traitKeys = Object.keys(userTraits) as (keyof UserTraits)[];
   
@@ -71,7 +71,7 @@ export const normalizeUserTraits = (userTraits: UserTraits): UserTraits => {
   const normalizedTraits = { ...userTraits };
   for (const key of traitKeys) {
     const diff = userTraits[key] - mean;
-    normalizedTraits[key] = mean + diff * 1.5; // Amplify differences
+    normalizedTraits[key] = mean + (diff * 1.5); // Amplify differences
     if (normalizedTraits[key] < 0) normalizedTraits[key] = 0; // Ensure no negative values
   }
   

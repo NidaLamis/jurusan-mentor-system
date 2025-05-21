@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 const App = () => {
   // Set the document title
   useEffect(() => {
-    document.title = "Penentu Jurusan Kuliah - Tes Psikometrik";
+    document.title = "Olimpiade Kimia - Belajar dan Latihan Soal";
   }, []);
 
   return (

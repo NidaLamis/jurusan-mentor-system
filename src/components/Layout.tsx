@@ -17,21 +17,21 @@ const Layout: React.FC<LayoutProps> = ({ children, showHeader = true }) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {showHeader && (
-        <header className="bg-chemistry-950 text-white p-4 shadow-md">
+        <header className="bg-education-950 text-white p-4 shadow-md">
           <div className="container mx-auto flex justify-between items-center">
             <h1 
               className="text-xl font-bold cursor-pointer" 
               onClick={() => navigate('/')}
             >
-              Olimpiade Kimia
+              Penentu Jurusan
             </h1>
             {!isHomePage && (
               <Button 
                 variant="outline" 
-                className="text-white border-white hover:bg-chemistry-800 hover:text-white"
+                className="text-white border-white hover:bg-education-800 hover:text-white"
                 onClick={() => navigate('/')}
               >
-                Kembali ke Beranda
+                Mulai Ulang
               </Button>
             )}
           </div>
@@ -40,9 +40,9 @@ const Layout: React.FC<LayoutProps> = ({ children, showHeader = true }) => {
       <main className="container mx-auto py-8 px-4 sm:px-6">
         {children}
       </main>
-      <footer className="bg-chemistry-950 text-white p-4 mt-auto">
+      <footer className="bg-education-950 text-white p-4 mt-auto">
         <div className="container mx-auto text-center">
-          <p className="text-sm">© 2025 Olimpiade Kimia. Platform untuk belajar dan latihan soal olimpiade kimia.</p>
+          <p className="text-sm">© 2025 Penentu Jurusan. Dibuat untuk membantu calon mahasiswa memilih jurusan kuliah yang tepat.</p>
         </div>
       </footer>
     </div>

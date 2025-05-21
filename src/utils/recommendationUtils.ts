@@ -1,79 +1,73 @@
-import { Question, Topic, UserTraits } from '../types/quiz';
+
+import { Major } from "../data/questionsData";
 
 // Define the UserTraits interface
 export interface UserTraits {
+  analytical: number;
+  creative: number;
+  social: number;
+  practical: number;
+  investigative: number;
+  enterprising: number;
   [key: string]: number; // Index signature to make it compatible with Record<string, number>
 }
 
-// Function to calculate user's score in each chemistry topic
-export const calculateTopicScores = (answers: Record<number, string>, questions: Question[]): Record<string, number> => {
-  const topicScores: Record<string, number> = {};
-  const topicCounts: Record<string, number> = {};
+// Calculate similarity between user traits and chemistry topic traits using cosine similarity
+export const calculateSimilarity = (userTraits: UserTraits, major: Major): number => {
+  const traitKeys = Object.keys(userTraits) as (keyof UserTraits)[];
   
-  // Process each answer
-  for (const questionId in answers) {
-    const question = questions.find(q => q.id === parseInt(questionId));
+  // Calculate dot product
+  let dotProduct = 0;
+  let normUser = 0;
+  let normMajor = 0;
+  
+  for (const key of traitKeys) {
+    const userVal = userTraits[key] || 0;
+    const majorVal = major.traits[key] || 0;
     
-    if (question && question.topic) {
-      // Initialize topic if not already in scores
-      if (!topicScores[question.topic]) {
-        topicScores[question.topic] = 0;
-        topicCounts[question.topic] = 0;
-      }
-      
-      // If answer is correct, increment score
-      if (answers[parseInt(questionId)] === question.correctAnswer) {
-        topicScores[question.topic]++;
-      }
-      
-      // Increment count of questions in this topic
-      topicCounts[question.topic]++;
-    }
+    dotProduct += userVal * majorVal;
+    normUser += userVal * userVal;
+    normMajor += majorVal * majorVal;
   }
   
-  // Convert raw scores to percentages
-  const percentageScores: Record<string, number> = {};
-  for (const topic in topicScores) {
-    if (topicCounts[topic] > 0) {
-      percentageScores[topic] = (topicScores[topic] / topicCounts[topic]) * 100;
-    } else {
-      percentageScores[topic] = 0;
-    }
-  }
+  // Avoid division by zero
+  if (normUser === 0 || normMajor === 0) return 0;
   
-  return percentageScores;
+  // Calculate cosine similarity
+  const similarity = dotProduct / (Math.sqrt(normUser) * Math.sqrt(normMajor));
+  
+  return similarity;
 };
 
-// Calculate percentage of correct answers
-export const calculateOverallScore = (answers: Record<number, string>, questions: Question[]): number => {
-  let correct = 0;
-  let total = 0;
-  
-  for (const questionId in answers) {
-    const question = questions.find(q => q.id === parseInt(questionId));
-    if (question) {
-      total++;
-      if (answers[parseInt(questionId)] === question.correctAnswer) {
-        correct++;
-      }
-    }
-  }
-  
-  return total > 0 ? (correct / total) * 100 : 0;
+// Define a return type for the enhanced majors with similarity score
+export interface MajorWithSimilarity extends Major {
+  similarity?: number;
+}
+
+// Get ranked majors based on user traits
+export const getRecommendedMajors = (userTraits: UserTraits, majors: Major[]): MajorWithSimilarity[] => {
+  return majors
+    .map(major => ({
+      ...major,
+      similarity: calculateSimilarity(userTraits, major)
+    }))
+    .sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 };
 
-// Normalize user traits (keeping this for compatibility)
+// Normalize user traits to have higher contrast
 export const normalizeUserTraits = (userTraits: UserTraits): UserTraits => {
-  const traitKeys = Object.keys(userTraits);
+  const traitKeys = Object.keys(userTraits) as (keyof UserTraits)[];
+  const sum = traitKeys.reduce((acc, key) => acc + userTraits[key], 0);
+  
+  // If no traits, return empty
+  if (sum === 0) {
+    return userTraits;
+  }
   
   // Calculate mean
-  let sum = 0;
-  for (const key of traitKeys) {
-    sum += userTraits[key];
-  }
   const mean = sum / traitKeys.length;
   
-  // Normalize and amplify differences
+  // Enhance contrast by amplifying differences from mean
   const normalizedTraits = { ...userTraits };
   for (const key of traitKeys) {
     const diff = userTraits[key] - mean;
@@ -84,18 +78,16 @@ export const normalizeUserTraits = (userTraits: UserTraits): UserTraits => {
   return normalizedTraits;
 };
 
-// Get recommended topics based on performance
-export const getRecommendedTopics = (topicScores: Record<string, number>, topics: Topic[]): Topic[] => {
-  // Sort topics by score (lower scores first, as these need more practice)
-  const sortedTopics = [...topics].sort((a, b) => {
-    const scoreA = topicScores[a.id] || 0;
-    const scoreB = topicScores[b.id] || 0;
-    return scoreA - scoreB; // Sort ascending (low scores first)
-  });
+// Transform trait scores to percentages for display
+export const getTraitPercentages = (traits: Record<string, number>): Record<string, number> => {
+  const total = Object.values(traits).reduce((sum, val) => sum + val, 0);
   
-  // Add score property to topics
-  return sortedTopics.map(topic => ({
-    ...topic,
-    score: topicScores[topic.id] || 0
-  }));
+  if (total === 0) return traits;
+  
+  const percentages: Record<string, number> = {};
+  for (const [trait, value] of Object.entries(traits)) {
+    percentages[trait] = Math.round((value / total) * 100);
+  }
+  
+  return percentages;
 };

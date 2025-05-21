@@ -1,4 +1,4 @@
-import { Question, Topic } from '../data/questionsData';
+import { Question, Topic, UserTraits } from '../types/quiz';
 
 // Define the UserTraits interface
 export interface UserTraits {
